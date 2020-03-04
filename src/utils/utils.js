@@ -19,4 +19,8 @@ class Utils {
 
         return newObj;
     }
+
+    static getRandomInt(max, offset) {
+        return Math.floor(Math.random() * Math.floor(max)) + offset;
+    }
 }
