@@ -4,6 +4,9 @@ const canvasHeight = 800;
 let auto = false;
 const fps = 20;
 let g = new gol(20, 20, [
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -12,9 +15,6 @@ let g = new gol(20, 20, [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -39,41 +39,41 @@ document.getElementById("Start").onclick = function () {
   document.getElementById("Start").innerHTML = (auto ? "Pause" : "Start");
 };
 
-document.getElementById("Reset").onclick = function () {
+document.getElementById("LoadSave").onclick = function () {
   g.reset();
   g.draw();
   auto = false;
   document.getElementById("Start").innerHTML = "Start";
+  document.getElementById("NextStep").innerHTML = "Next Step (0)";
 };
 
-function mouseClicked() {
+document.getElementById("Save").onclick = function () {
+  g.save();
+};
+
+document.getElementById("Clear").onclick = function () {
+  g.clear();
+  g.draw();
+  auto = false;
+  document.getElementById("NextStep").innerHTML = "Next Step (0)";
+  document.getElementById("Start").innerHTML = "Start";
+};
+
+function addOrRemoveCellFromMouse() {
   let thickness = 2;
   let boxSize = 20;
   let offset = boxSize + thickness;
   let mX = Math.floor(mouseX);
   let mY = Math.floor(mouseY);
 
-  console.log(mX, mY);
   let x = Math.floor(mX / offset);
   let y = Math.floor(mY / offset);
-  g.addCell(new Pos(x, y), 1);
+  g.addCell(new Pos(x, y));
   g.draw();
-  console.log(x, y);
 }
 
-function mouseDragged() {
-  let thickness = 2;
-  let boxSize = 20;
-  let offset = boxSize + thickness;
-  let mX = Math.floor(mouseX);
-  let mY = Math.floor(mouseY);
-
-  console.log(mX, mY);
-  let x = Math.floor(mX / offset);
-  let y = Math.floor(mY / offset);
-  g.addCell(new Pos(x, y), 1);
-  g.draw();
-  console.log(x, y);
+function mouseClicked() {
+  addOrRemoveCellFromMouse()
 }
 
 function setup() {

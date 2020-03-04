@@ -14,35 +14,71 @@ class gol {
         this.GROWING = 3;
     }
 
-    countNeighbour(p, state) {
-        let count = 0;
-        let x = p.x;
-        let y = p.y;
-
+    getStateFrom(x, y) {
+        // if (x < 5 && y < 5)
+            // console.log("old: " + x + "," + y);
+            let oldX = x;
+            let oldY = y;
         if (x >= this.width) x = 0;
         else if (x < 0) x = this.width - 1;
         if (y >= this.height) y = 0;
         else if (y < 0) y = this.height - 1;
+        if (x < 5 && y < 5 && this.cellArr[y][x] != 0) {
+            console.log("old: " + oldX + "," + oldY);
+            console.log("new: " + x + "," + y);
+            console.log(this.cellArr[y][x])
+        }
+        return this.cellArr[y][x];
+    }
 
-        if (y < this.height - 1) {
-            count += this.cellArr[y + 1][x] == state;
-            if (x < this.width - 1) count += this.cellArr[y + 1][x + 1] == state;
-            if (x > 0) count += this.cellArr[y + 1][x - 1] == state;
-        }
-        if (x < this.width - 1) count += this.cellArr[y][x + 1] == state;
-        if (x > 0) count += this.cellArr[y][x - 1] == state;
-        if (y > 0) {
-            count += this.cellArr[y - 1][x] == state;
-            if (x < this.width - 1) count += this.cellArr[y - 1][x + 1] == state;
-            if (x > 0) count += this.cellArr[y - 1][x - 1] == state;
-        }
+    countNeighbour(p, state) {
+        let count = 0;
+
+        let x = p.x;
+        let y = p.y;
+
+        count += this.getStateFrom(x + 1, y + 1) == state;
+        count += this.getStateFrom(x + 1, y - 1) == state;
+        count += this.getStateFrom(x + 1, y) == state;
+        count += this.getStateFrom(x, y + 1) == state;
+        count += this.getStateFrom(x, y - 1) == state;
+        count += this.getStateFrom(x - 1, y + 1) == state;
+        count += this.getStateFrom(x - 1, y - 1) == state;
+        count += this.getStateFrom(x - 1, y) == state;
+
+        // if (y < this.height - 1) {
+        //     count += this.cellArr[y + 1][x] == state;
+        //     if (x < this.width - 1) count += this.cellArr[y + 1][x + 1] == state;
+        //     if (x > 0) count += this.cellArr[y + 1][x - 1] == state;
+        // }
+        // if (x < this.width - 1) count += this.cellArr[y][x + 1] == state;
+        // if (x > 0) count += this.cellArr[y][x - 1] == state;
+        // if (y > 0) {
+        //     count += this.cellArr[y - 1][x] == state;
+        //     if (x < this.width - 1) count += this.cellArr[y - 1][x + 1] == state;
+        //     if (x > 0) count += this.cellArr[y - 1][x - 1] == state;
+        // }
         return count;
+    }
+
+    clear() {
+        this.step = 0;
+        console.log(this.height, this.width)
+        for (let y = 0; y < this.height; y++) {
+            if (this.height > 0)
+                for (let x = 0; x < this.width; x++) {
+                    this.cellArr[y][x] = this.DEAD;
+                }
+        }
     }
 
     reset() {
         this.cellArr = JSON.parse(JSON.stringify(this.originalCellArr));
         this.step = 0;
-        document.getElementById("NextStep").innerHTML = "Next Step (0)";
+    }
+
+    save() {
+        this.originalCellArr = JSON.parse(JSON.stringify(this.cellArr));
     }
 
     update() {
@@ -99,8 +135,9 @@ class gol {
         }
     }
 
-    addCell(p, state) {
-        if (p.x < this.width && p.y >= 0)
-            this.cellArr[p.y][p.x] = state;
+    addCell(p) {
+        if (p.x < this.width && p.x >= 0 &&
+            p.y < this.height && p.y >= 0)
+            this.cellArr[p.y][p.x] = (this.cellArr[p.y][p.x] == this.ALIVE ? this.DEAD : this.ALIVE);
     }
 }
