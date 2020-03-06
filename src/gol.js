@@ -1,10 +1,14 @@
 class gol {
     //cellArr => 0 dead, 1 alive, 2 dying, 3 growing
-    constructor(width, height, cellArr) {
+    constructor(width, height) {
         this.height = height;
         this.width = width;
-        this.originalCellArr = JSON.parse(JSON.stringify(cellArr));
-        this.cellArr = cellArr;
+        this.cellArr = new Array(height);
+        for (let i = 0; i < this.height; i++) {
+            this.cellArr[i] = new Array(width);
+            for (let j = 0; j < width; j++) this.cellArr[i][j] = 0;
+        }
+        this.originalCellArr = JSON.parse(JSON.stringify(this.cellArr));
         this.step = 0;
 
         this.grid = new Grid(new Pos(0, 0), width, height, 20, 2);
@@ -15,19 +19,14 @@ class gol {
     }
 
     getStateFrom(x, y) {
-        // if (x < 5 && y < 5)
-            // console.log("old: " + x + "," + y);
-            let oldX = x;
-            let oldY = y;
+        let oldX = x;
+        let oldY = y;
+
         if (x >= this.width) x = 0;
         else if (x < 0) x = this.width - 1;
         if (y >= this.height) y = 0;
         else if (y < 0) y = this.height - 1;
-        if (x < 5 && y < 5 && this.cellArr[y][x] != 0) {
-            console.log("old: " + oldX + "," + oldY);
-            console.log("new: " + x + "," + y);
-            console.log(this.cellArr[y][x])
-        }
+
         return this.cellArr[y][x];
     }
 
@@ -46,24 +45,13 @@ class gol {
         count += this.getStateFrom(x - 1, y - 1) == state;
         count += this.getStateFrom(x - 1, y) == state;
 
-        // if (y < this.height - 1) {
-        //     count += this.cellArr[y + 1][x] == state;
-        //     if (x < this.width - 1) count += this.cellArr[y + 1][x + 1] == state;
-        //     if (x > 0) count += this.cellArr[y + 1][x - 1] == state;
-        // }
-        // if (x < this.width - 1) count += this.cellArr[y][x + 1] == state;
-        // if (x > 0) count += this.cellArr[y][x - 1] == state;
-        // if (y > 0) {
-        //     count += this.cellArr[y - 1][x] == state;
-        //     if (x < this.width - 1) count += this.cellArr[y - 1][x + 1] == state;
-        //     if (x > 0) count += this.cellArr[y - 1][x - 1] == state;
-        // }
         return count;
     }
 
     clear() {
         this.step = 0;
-        console.log(this.height, this.width)
+        document.getElementById("NextStep").innerHTML = "Next Step (0)";
+
         for (let y = 0; y < this.height; y++) {
             if (this.height > 0)
                 for (let x = 0; x < this.width; x++) {
@@ -98,17 +86,17 @@ class gol {
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
                 let cellState = this.cellArr[y][x];
-                let aliveNeighbour = this.countNeighbour(new Pos(x, y), this.ALIVE)
-                    + this.countNeighbour(new Pos(x, y), this.DYING);
+                let aliveNeighbour = this.countNeighbour(new Pos(x, y), this.ALIVE) +
+                    this.countNeighbour(new Pos(x, y), this.DYING);
 
                 if (aliveNeighbour == 3 && cellState != this.ALIVE) { //born
                     this.cellArr[y][x] = this.GROWING;
-                }
-                else if (cellState == this.ALIVE && aliveNeighbour != 2 && aliveNeighbour != 3)
+                } else if (cellState == this.ALIVE && aliveNeighbour != 2 && aliveNeighbour != 3)
                     this.cellArr[y][x] = this.DYING;
             }
         }
     }
+
 
     draw() {
         this.grid.draw();
@@ -127,8 +115,8 @@ class gol {
 
                 if (this.cellArr[j][i] == this.DEAD) color = 'white';
                 else if (this.cellArr[j][i] == this.ALIVE) color = 'blue';
-                else if (this.cellArr[j][i] == this.DYING) color = 'red';
-                else if (this.cellArr[j][i] == this.GROWING) color = 'green';
+                else if (this.cellArr[j][i] == this.DYING) color = Utils.getSelectedFromId("colorDying");
+                else if (this.cellArr[j][i] == this.GROWING) color = Utils.getSelectedFromId("colorGrowing");
 
                 new Cell(p, (boxSize / 2) - 1, color).draw();
             }

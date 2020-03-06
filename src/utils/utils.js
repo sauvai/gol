@@ -10,10 +10,10 @@ class Utils {
     static extend(obj, src) {
         var newObj = {};
 
-        Object.keys(obj).forEach(function (key) {
+        Object.keys(obj).forEach(function(key) {
             newObj[key] = obj[key];
         });
-        Object.keys(src).forEach(function (key) {
+        Object.keys(src).forEach(function(key) {
             newObj[key] = src[key];
         });
 
@@ -22,5 +22,14 @@ class Utils {
 
     static getRandomInt(max, offset) {
         return Math.floor(Math.random() * Math.floor(max)) + offset;
+    }
+
+    static getSelectedFromId(id) {
+        var e = document.getElementById(id);
+        return (e.options[e.selectedIndex].text);
+    }
+
+    static isCheckedById(id) {
+        return document.getElementById(id).checked;
     }
 }

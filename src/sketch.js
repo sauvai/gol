@@ -1,45 +1,46 @@
 let pDraw;
-const canvasWidth = 800;
-const canvasHeight = 800;
+let fps = parseInt(document.getElementById("Framerate").value, 10)
+// let fps = 30;
+
+let lastFps = fps;
+
+const thickness = 2;
+const boxSize = 20;
+
+let width = parseInt(document.getElementById("Width").value, 10);
+let height = parseInt(document.getElementById("Height").value, 10);
+
+let canvasWidth = width * (boxSize + thickness) + thickness;
+let canvasHeight = height * (boxSize + thickness) + thickness;
+
 let auto = false;
-const fps = 20;
-let g = new gol(20, 20, [
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]);
 
-// function initPDraw() {
-//   pDraw = new PDraw();
-//   pDraw.initCanvas(canvasWidth, canvasHeight, fps);
-// }
+let g = new gol(width, height);
 
-document.getElementById("NextStep").onclick = function () {
+document.getElementById("NextStep").onclick = function() {
   g.update();
 };
 
-document.getElementById("Start").onclick = function () {
+document.getElementById("Start").onclick = function() {
   auto = !auto;
   document.getElementById("Start").innerHTML = (auto ? "Pause" : "Start");
 };
 
-document.getElementById("LoadSave").onclick = function () {
+document.getElementById("Set").onclick = function() {
+  width = parseInt(document.getElementById("Width").value, 10);
+  height = parseInt(document.getElementById("Height").value, 10);
+
+  g = new gol(width, height);
+  canvasWidth = width * (boxSize + thickness) + thickness;
+  canvasHeight = height * (boxSize + thickness) + thickness;
+  resizeCanvas(canvasWidth, canvasHeight);
+  auto = false;
+  document.getElementById("Start").innerHTML = "Start";
+  g.clear();
+  g.draw();
+};
+
+document.getElementById("LoadSave").onclick = function() {
   g.reset();
   g.draw();
   auto = false;
@@ -47,11 +48,11 @@ document.getElementById("LoadSave").onclick = function () {
   document.getElementById("NextStep").innerHTML = "Next Step (0)";
 };
 
-document.getElementById("Save").onclick = function () {
+document.getElementById("Save").onclick = function() {
   g.save();
 };
 
-document.getElementById("Clear").onclick = function () {
+document.getElementById("Clear").onclick = function() {
   g.clear();
   g.draw();
   auto = false;
@@ -60,8 +61,7 @@ document.getElementById("Clear").onclick = function () {
 };
 
 function addOrRemoveCellFromMouse() {
-  let thickness = 2;
-  let boxSize = 20;
+
   let offset = boxSize + thickness;
   let mX = Math.floor(mouseX);
   let mY = Math.floor(mouseY);
@@ -78,10 +78,19 @@ function mouseClicked() {
 
 function setup() {
   pDraw = new PDraw();
-  pDraw.initCanvas(canvasWidth, canvasHeight, fps)
+  pDraw.initCanvas(canvasWidth, canvasHeight, fps);
 }
 
 function draw() {
+  lastFps = parseInt(document.getElementById("Framerate").value, 10);
+
+  if (lastFps != fps) {
+    fps = lastFps;
+    frameRate(fps);
+    console.log(frameRate());
+    console.log(fps);
+  }
+
   g.draw();
   if (auto) g.update();
 }
