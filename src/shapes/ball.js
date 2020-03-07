@@ -1,4 +1,4 @@
-class Cell {
+class Ball {
     constructor(p, radius, color) {
         if (typeof options != 'undefined')
             this.options = Utils.extend(this.options, options);
